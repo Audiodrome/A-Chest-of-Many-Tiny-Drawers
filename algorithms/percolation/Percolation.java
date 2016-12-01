@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
 
     private boolean grid[][];
-    private WeightedQuickUnionUF wqu;
+    public static WeightedQuickUnionUF uf;
     private int width;
     private int bound;
     // private int matrix_map[];
@@ -15,9 +15,24 @@ public class Percolation {
             throw new IndexOutOfBoundsException("row index i out of bounds");        
     }
 
-    private void ChkNeighbors(int row, int col) {
-        int p = xyTo1D(row, col);
-        if ( p < bound && grid[])
+    private void ConnectToOpenNeighbors(int row, int col,
+                                        int neighbor_r, int neighbor_c) {
+        int q = xyTo1D(neighbor_r, neighbor_c);
+        // ChkBounds(q);
+        if ( q < bound && grid[neighbor_r][neighbor_c] == true) {
+            int p = xyTo1D(row, col);
+            uf.union(p, q);
+        }
+    }
+
+    private void ConnectToVirtualTop (p) {
+        int q = xyTo1D(0, 0);
+        uf.union(p, q);
+    }
+
+    private void ConnectToVirtualBottom(p) {
+        int q = xyTo1D(0, 1);
+        uf.union(p, q);
     }
 
     private int xyTo1D(int row, int col) {
@@ -28,8 +43,7 @@ public class Percolation {
         width = n;
         bound = n * n;
         grid = new boolean[n+1][n+1];
-        wqu = new WeightedQuickUnionUF(n*n);
-        // matrix_map = new int[n*n];
+        uf = new WeightedQuickUnionUF(n*n);
     }
 
     public void open(int row, int col) {
@@ -39,16 +53,15 @@ public class Percolation {
         if (grid[row][col] == false)
             grid[row][col] = true;
 
-        neighbor = xyTo1D(row - 1, col);
-        ChkNeighbors(p, neighbor)
-        p = xyTo1D(row - 1, col);
+        if (row == 1)
+            ConnectToVirtualTop(p);
+        if (row == n)
+            ConnectToVirtualBottom(p);
 
-        p = xyTo1D(row + 1, col);
-
-        p = xyTo1D(row, col - 1);
-
-        p = xyTo1D(row, col + 1);
-
+        ConnectToOpenNeighbors(row, col, row - 1, col);
+        ConnectToOpenNeighbors(row, col, row + 1, col);
+        ConnectToOpenNeighbors(row, col, row, col - 1);
+        ConnectToOpenNeighbors(row, col, row, col + 1);
     }
 
     public boolean isOpen(int row, int col) {
@@ -61,8 +74,12 @@ public class Percolation {
 
     public static void main(String[] args) {
 
-        Percolation test = new Percolation(4);
+        Percolation test = new Percolation(3);
 
+        test.open(4,4);
+        test.open(1,2);
+
+        System.out.println(uf.connected(4,5));
         //System.out.println(test.ChkBounds(6));
         //WeightedQuickUnionUF wqu = new WeightedQuickUnionUF(4);
         //System.out.println(test.isFull(4, 4));
