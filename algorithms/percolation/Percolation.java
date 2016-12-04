@@ -13,17 +13,18 @@ public class Percolation {
     private void ConnectToOpenNeighbors(int row, int col,
                                         int neighbor_r, int neighbor_c) {
         int b = size + 1;
-        
+        int p = xyTo1D(row, col);
+
         if (neighbor_c < b && neighbor_r < b) {
             if (grid[neighbor_r][neighbor_c] == true) {
                 int q = xyTo1D(neighbor_r, neighbor_c);
-                int p = xyTo1D(row, col);
                 uf.union(p, q);
-                if (row == 1) ConnectToVirtualTop(p);
-                if (row == size && uf.connected(p, top_id) == true)
-                    ConnectToVirtualBottom(p);
+                // if (row == size && uf.connected(q, top_id) == true)
+                //     ConnectToVirtualBottom(p);
             }
         }
+        if (row == 1) ConnectToVirtualTop(p);
+        if (row == size) ConnectToVirtualBottom(p);
     }
 
     private void ConnectToVirtualTop (int p) {
@@ -64,7 +65,7 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        int p = xyTo1D(row, col);
+        int p = xyTo1D(row, col); ChkBounds(p);
         return uf.connected(p, top_id) == true;
     }
 
@@ -73,4 +74,9 @@ public class Percolation {
         int q = bottom_id;
         return uf.connected(p, q) == true;
     }
+
+    // public static void main(String[] args) {
+    //     Percolation perc = new Percolation(1);
+    //     perc.open(1,1);
+    // }
 }
