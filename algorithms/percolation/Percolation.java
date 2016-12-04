@@ -1,82 +1,89 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private boolean grid[][];
+    private boolean[][] grid;
     private WeightedQuickUnionUF uf;
-    private int size, bound, top_id, bottom_id;
-
-    private void ChkBounds(int i) {
-        if (i <= 0 || i > bound)
-            throw new IndexOutOfBoundsException("row index i out of bounds");
-    }
-
-    private void ConnectToOpenNeighbors(int row, int col,
-                                        int neighbor_r, int neighbor_c) {
-        int b = size + 1;
-        int p = xyTo1D(row, col);
-
-        if (neighbor_c < b && neighbor_r < b) {
-            if (grid[neighbor_r][neighbor_c] == true) {
-                int q = xyTo1D(neighbor_r, neighbor_c);
-                uf.union(p, q);
-                // if (row == size && uf.connected(q, top_id) == true)
-                //     ConnectToVirtualBottom(p);
-            }
-        }
-        if (row == 1) ConnectToVirtualTop(p);
-        if (row == size) ConnectToVirtualBottom(p);
-    }
-
-    private void ConnectToVirtualTop (int p) {
-        uf.union(p, top_id);
-    }
-
-    private void ConnectToVirtualBottom(int p) {
-        uf.union(p, bottom_id);
-    }
-
-    private int xyTo1D(int row, int col) {
-        return size * row + col;
-    }
+    private int size, bound, topID, bottomID;
 
     public Percolation(int n) {
         size = n;
         bound = (n + 1) * (n + 1);
         grid = new boolean[n+1][n+1];
         uf = new WeightedQuickUnionUF(bound + 1);
-        top_id = 0;
-        bottom_id = bound;
+        topID = 0;
+        bottomID = bound;
+    }
+
+    private void chkBounds(int i, int j) {
+
+        if (i <= 0 || i > size || j <= 0 || j > size) {
+            String msg = "Row or column is out of bounds";
+            throw new IndexOutOfBoundsException(msg);
+        }
+    }
+
+    private void connectToOpenNeighbors(int row, int col,
+                                        int neighborR, int neighborC) {
+        int b = size + 1;
+        int p = xyTo1D(row, col);
+        if (row == 1) connectToVirtualTop(p);
+
+        if (neighborC < b && neighborR < b) {
+            if (grid[neighborR][neighborC]) {
+                int q = xyTo1D(neighborR, neighborC);
+                uf.union(p, q);
+            }
+        }
+        if (row == size && uf.connected(p, topID))
+            connectToVirtualBottom(p);
+    }
+
+    private void connectToVirtualTop(int p) {
+        uf.union(p, topID);
+    }
+
+    private void connectToVirtualBottom(int p) {
+        uf.union(p, bottomID);
+    }
+
+    private int xyTo1D(int row, int col) {
+        return size * row + col;
     }
 
     public void open(int row, int col) {
-        int p = xyTo1D(row, col); ChkBounds(p);
+        chkBounds(row, col);
 
-        if (grid[row][col] == false) grid[row][col] = true;
+        if (!grid[row][col]) {
+            grid[row][col] = true;
 
-        ConnectToOpenNeighbors(row, col, row - 1, col);
-        ConnectToOpenNeighbors(row, col, row + 1, col);
-        ConnectToOpenNeighbors(row, col, row, col - 1);
-        ConnectToOpenNeighbors(row, col, row, col + 1);
+            connectToOpenNeighbors(row, col, row - 1, col);
+            connectToOpenNeighbors(row, col, row + 1, col);
+            connectToOpenNeighbors(row, col, row, col - 1);
+            connectToOpenNeighbors(row, col, row, col + 1);
+        }
     }
 
     public boolean isOpen(int row, int col) {
-        int p = xyTo1D(row, col); ChkBounds(p);
-        return uf.connected(p, top_id) == false && grid[row][col] == true;
+        chkBounds(row, col);
+        return grid[row][col];
     }
 
     public boolean isFull(int row, int col) {
-        int p = xyTo1D(row, col); ChkBounds(p);
-        return uf.connected(p, top_id) == true;
+        int p = xyTo1D(row, col);
+        chkBounds(row, col);
+        return uf.connected(p, topID);
     }
 
     public boolean percolates() {
-        int p = top_id;
-        int q = bottom_id;
-        return uf.connected(p, q) == true;
+        int p = topID;
+        int q = bottomID;
+        return uf.connected(p, q);
     }
 
-    // public static void main(String[] args) {
-    //     Percolation perc = new Percolation(1);
-    //     perc.open(1,1);
-    // }
+    public static void main(String[] args) {
+        Percolation perc = new Percolation(6);
+        perc.open(1, 6);
+
+        // System.out.println(perc.isOpen(1, 6));
+    }
 }
