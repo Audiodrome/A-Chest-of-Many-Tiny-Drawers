@@ -1,68 +1,97 @@
-//package edu.princeton.cs.algs4;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class Deque<Item> implements Iterable<Item> {
 
-    private Node first, last;
+    private Node head, tail;
     private int n;
 
     private class Node {
         private Item item;
         private Node next;
+        private Node prev;
     }
 
     public Deque() {
-        first = null;
-        last = null;
+        head = null;
+        tail = null;
         n = 0;
     }
 
-    public boolean isEmpty() { return first == null; }
-    public int size() { return n; }
+    public boolean isEmpty() {
+        return n == 0;
+    }
+    public int size() {
+        return n;
+    }
 
-    public void addFirst(Item item) {
+    public void addHead(Item item) {
         if (item == null)
             throw new NullPointerException();
-        Node oldfirst = first;
-        first = new Node();
-        first.item = item;
-        first.next = null;
-        if (isEmpty())
-            last = first;
-        else
-            first.next = oldfirst;
+        Node oldhead = head;
+        head = new Node();
+        head.item = item;
+        head.prev = null;
+        if (isEmpty()) {
+            head.next = null;
+            tail = head;
+        }
+        else {
+            head.next = oldhead;
+            oldhead.prev = head;
+        }
         n++;
     }
 
-    public void addLast(Item item) {
+    public void addTail(Item item) {
         if (item == null)
             throw new NullPointerException();
-        Node oldlast = last;
-        last = new Node();
-        last.item = item;
-        last.next = null;
-        if (isEmpty())
-            first = last;
-        else
-            oldlast.next = last;
+        Node oldtail = tail;
+        tail = new Node();
+        tail.item = item;
+        tail.next = null;
+        if (isEmpty()) {
+            tail.prev = null;
+            head = tail;
+        }
+        else {
+            oldtail.next = tail;
+            tail.prev = oldtail;
+        }
         n++;
     }
 
-    public Item removeFirst() {
-        Item item = first.item;
-        first = first.next;
+    public Item removeHead() {
         if (isEmpty())
-            last = null;
+            throw new NoSuchElementException();
+        Item item = head.item;
+
+        if (n == 1) {
+            head = null;
+            tail = null;
+        }
+        else {
+            head = head.next;
+            head.prev = null;
+        }
         n--;
         return item;
     }
 
-    public Item removeLast() {
-        Item item = last.item;
-        last = last.next;
+    public Item removeTail() {
         if (isEmpty())
-            first = null;
+            throw new NoSuchElementException();
+
+        Item item = tail.item;
+
+        if (n == 1) {
+            head = null;
+            tail = null;
+        }
+        else {
+            tail = tail.prev;
+            tail.next = null;
+        }
         n--;
         return item;
     }
@@ -72,11 +101,15 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     private class ListIterator implements Iterator<Item> {
-        private Node current = first;
+        private Node current = head;
 
-        public boolean hasNext() { return current != null; }
+        public boolean hasNext() {
+            return current != null;
+        }
 
-        public void remove() { throw new UnsupportedOperationException(); }
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
 
         public Item next()
         {
@@ -88,18 +121,36 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    public static void main(String[] args) {
-        Deque<String> deck = new Deque<String>();
+    // public static void main(String[] args) {
+    //     Deque<String> deck = new Deque<String>();
 
-    //     while (!StdIn.isEmpty()) {
-    //         String item = StdIn.readString();
-    //         if (!item.equals("-"))
-    //             deck.addLast(item);
-    //         else if (!deck.isEmpty())
-    //             StdOut.print(deck.removeFirst() + " ");
+    //     deck.addTail("a");
+    //     deck.addTail("b");
+    //     deck.addHead("c");
+    //     deck.addHead("d");
+    //     deck.addTail("e");
+
+    //     deck.removeHead();
+    //     deck.removeHead();
+    //     deck.removeHead();
+    //     deck.removeHead();
+    //     deck.removeHead();
+    //     deck.removeHead();
+
+    //     deck.removeTail();
+    //     deck.removeTail();
+    //     deck.removeTail();
+    //     deck.removeTail();
+
+
+    //     for (String item : deck)
+    //         System.out.println(item);
+    //     System.out.println("-------------");
+    //     while (!deck.isEmpty()) {
+    //         System.out.print(deck.removeHead());
     //     }
-    //     StdOut.println(deck.size() + " left on queue");
-    //
-    }
+    //     System.out.println("Size: " + deck.size());
+
+    // }
 
 }
