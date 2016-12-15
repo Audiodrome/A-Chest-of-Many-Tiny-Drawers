@@ -50,7 +50,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public Item sample() {
         if (isEmpty())
             throw new NoSuchElementException();
-        return q[n-1];
+        int i = StdRandom.uniform(0, n);
+        return q[i];
     }
 
     public Iterator<Item> iterator() {
@@ -59,13 +60,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class ArrayIterator implements Iterator<Item> {
         private int i;
+        private int k = n;
+        private Item arr[] = (Item[]) new Object[k];
 
         public ArrayIterator() {
-            i = n - 1;
+            for (int i = 0; i < k; i++)
+                arr[i] = q[i];
         }
+
         public boolean hasNext() {
             return i >= 0;
         }
+
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -73,7 +79,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         public Item next() {
             if (!hasNext())
                 throw new NoSuchElementException();
-            return q[i--];
+            int rand = StdRandom.uniform(0, k);
+            Item item = arr[rand];
+            if (rand != k - 1)
+                arr[rand] = arr[k-1];
+            k--;
+            arr[k] = null;
+            return item;
         }
     }
 
@@ -86,29 +98,29 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         q = temp;
     }
 
-    public static void main(String[] args) {
-        RandomizedQueue<String> randQ = new RandomizedQueue<String>();
+    // public static void main(String[] args) {
+    //     RandomizedQueue<String> randQ = new RandomizedQueue<String>();
 
-        randQ.enqueue("a");
-        randQ.enqueue("b");
-        randQ.enqueue("c");
-        randQ.enqueue("d");
-        randQ.enqueue("e");
+    //     randQ.enqueue("a");
+    //     randQ.enqueue("b");
+    //     randQ.enqueue("c");
+    //     randQ.enqueue("d");
+    //     randQ.enqueue("e");
 
-        System.out.println("-------------");
+    //     System.out.println("-------------");
 
-        for (String item : randQ)
-            System.out.println(item);
+    //     for (String item : randQ)
+    //         System.out.println(item);
 
-        randQ.enqueue("d");
-        randQ.enqueue("e");
-        System.out.println("-------------");
-        for (String item : randQ)
-            System.out.println(item);
+    //     randQ.enqueue("d");
+    //     randQ.enqueue("e");
+    //     System.out.println("-------------");
+    //     for (String item : randQ)
+    //         System.out.println(item);
 
 
-        // while (!randQ.isEmpty()) {
-        //     System.out.println(randQ.dequeue());
-        // }
-    }
+    //     while (!randQ.isEmpty()) {
+    //         System.out.println(randQ.dequeue());
+    //     }
+    // }
 }
