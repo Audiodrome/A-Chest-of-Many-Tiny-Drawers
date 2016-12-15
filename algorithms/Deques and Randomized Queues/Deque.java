@@ -3,7 +3,7 @@ import java.util.NoSuchElementException;
 
 public class Deque<Item> implements Iterable<Item> {
 
-    private Node head, tail;
+    private Node first, last;
     private int n;
 
     private class Node {
@@ -13,8 +13,8 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public Deque() {
-        head = null;
-        tail = null;
+        first = null;
+        last = null;
         n = 0;
     }
 
@@ -25,72 +25,72 @@ public class Deque<Item> implements Iterable<Item> {
         return n;
     }
 
-    public void addHead(Item item) {
+    public void addFirst(Item item) {
         if (item == null)
             throw new NullPointerException();
-        Node oldhead = head;
-        head = new Node();
-        head.item = item;
-        head.prev = null;
+        Node oldfirst = first;
+        first = new Node();
+        first.item = item;
+        first.prev = null;
         if (isEmpty()) {
-            head.next = null;
-            tail = head;
+            first.next = null;
+            last = first;
         }
         else {
-            head.next = oldhead;
-            oldhead.prev = head;
+            first.next = oldfirst;
+            oldfirst.prev = first;
         }
         n++;
     }
 
-    public void addTail(Item item) {
+    public void addLast(Item item) {
         if (item == null)
             throw new NullPointerException();
-        Node oldtail = tail;
-        tail = new Node();
-        tail.item = item;
-        tail.next = null;
+        Node oldlast = last;
+        last = new Node();
+        last.item = item;
+        last.next = null;
         if (isEmpty()) {
-            tail.prev = null;
-            head = tail;
+            last.prev = null;
+            first = last;
         }
         else {
-            oldtail.next = tail;
-            tail.prev = oldtail;
+            oldlast.next = last;
+            last.prev = oldlast;
         }
         n++;
     }
 
-    public Item removeHead() {
+    public Item removeFirst() {
         if (isEmpty())
             throw new NoSuchElementException();
-        Item item = head.item;
+        Item item = first.item;
 
         if (n == 1) {
-            head = null;
-            tail = null;
+            first = null;
+            last = null;
         }
         else {
-            head = head.next;
-            head.prev = null;
+            first = first.next;
+            first.prev = null;
         }
         n--;
         return item;
     }
 
-    public Item removeTail() {
+    public Item removeLast() {
         if (isEmpty())
             throw new NoSuchElementException();
 
-        Item item = tail.item;
+        Item item = last.item;
 
         if (n == 1) {
-            head = null;
-            tail = null;
+            first = null;
+            last = null;
         }
         else {
-            tail = tail.prev;
-            tail.next = null;
+            last = last.prev;
+            last.next = null;
         }
         n--;
         return item;
@@ -101,7 +101,7 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     private class ListIterator implements Iterator<Item> {
-        private Node current = head;
+        private Node current = first;
 
         public boolean hasNext() {
             return current != null;
@@ -124,30 +124,30 @@ public class Deque<Item> implements Iterable<Item> {
     // public static void main(String[] args) {
     //     Deque<String> deck = new Deque<String>();
 
-    //     deck.addTail("a");
-    //     deck.addTail("b");
-    //     deck.addHead("c");
-    //     deck.addHead("d");
-    //     deck.addTail("e");
+    //     deck.addLast("a");
+    //     deck.addLast("b");
+    //     deck.addFirst("c");
+    //     deck.addFirst("d");
+    //     deck.addLast("e");
 
-    //     deck.removeHead();
-    //     deck.removeHead();
-    //     deck.removeHead();
-    //     deck.removeHead();
-    //     deck.removeHead();
-    //     deck.removeHead();
+    //     deck.removeFirst();
+    //     deck.removeFirst();
+    //     deck.removeFirst();
+    //     deck.removeFirst();
+    //     deck.removeFirst();
+    //     deck.removeFirst();
 
-    //     deck.removeTail();
-    //     deck.removeTail();
-    //     deck.removeTail();
-    //     deck.removeTail();
+    //     deck.removeLast();
+    //     deck.removeLast();
+    //     deck.removeLast();
+    //     deck.removeLast();
 
 
     //     for (String item : deck)
     //         System.out.println(item);
     //     System.out.println("-------------");
     //     while (!deck.isEmpty()) {
-    //         System.out.print(deck.removeHead());
+    //         System.out.print(deck.removeFirst());
     //     }
     //     System.out.println("Size: " + deck.size());
 
